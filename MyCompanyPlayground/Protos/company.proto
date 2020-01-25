@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+option csharp_namespace = "MyCompanyPlayground.Protos";
+
+package company;
+
+service CompanyServices {
+
+	rpc AddCompany (Company) returns (Response);
+	rpc GetCompanyById (CompanyId) returns (Company);
+	rpc GetCompanyByIsin (CompanyIsin) returns (Company);
+	rpc GetAllCompanies (Empty) returns (Companies);
+	rpc UpdateCompanyDetails (UpdateCompany) returns (Response);
+}
+
+message Company{
+
+	string companyName = 1;
+	string Exchange = 2;
+	string Ticker = 3;
+	string Isin = 4;
+	string website = 5;
+}
+
+message UpdateCompany {
+	int32 Id = 1;
+	Company CompanyDetails = 2;
+}
+
+message Companies {
+	repeated Company Companys = 1;
+}
+
+message CompanyId {
+	int32 Id = 1;
+}
+
+message CompanyIsin {
+	int32 Isin = 1;
+}
+
+message Response {
+	string status = 1;
+	string errorMessage = 2;
+}
+
+message Empty {
+
+}

@@ -110,11 +110,11 @@ namespace MyCompanyPlayground.Services
 			{
 				company = new CompanyPayload
 				{
-					CompanyName = result?.Name,
-					Exchange = result?.Exchange,
-					Ticker = result?.Ticker,
-					Isin = result?.Isin,
-					Website = result?.Website
+					CompanyName = result.Name,
+					Exchange = result.Exchange,
+					Ticker = result.Ticker,
+					Isin = result.Isin,
+					Website = result.Website
 				};
 			}
 			

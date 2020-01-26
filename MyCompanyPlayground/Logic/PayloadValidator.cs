@@ -8,25 +8,25 @@ namespace MyCompanyPlayground.Logic
     {
         public static IList<string> VerifyMandatoryFields(CompanyPayload company)
         {
-            IList<string> MissingMandatoryFields = new List<string>();
+            IList<string> missingMandatoryFields = new List<string>();
             if (string.IsNullOrWhiteSpace(company.CompanyName))
             {
-                MissingMandatoryFields.Add("CompanyName");
+                missingMandatoryFields.Add("CompanyName");
             }
             if (string.IsNullOrWhiteSpace(company.Ticker))
             {
-                MissingMandatoryFields.Add("Ticker");
+                missingMandatoryFields.Add("Ticker");
             }
             if (string.IsNullOrWhiteSpace(company.Exchange))
             {
-                MissingMandatoryFields.Add("Exchange");
+                missingMandatoryFields.Add("Exchange");
             }
             if (string.IsNullOrWhiteSpace(company.Isin))
             {
-                MissingMandatoryFields.Add("Isin");
+                missingMandatoryFields.Add("Isin");
             }
             
-            return MissingMandatoryFields;
+            return missingMandatoryFields;
         }
         
         public static bool IsValid(string isin)

@@ -49,10 +49,6 @@
               "target": "Package",
               "version": "[2.24.0, )"
             },
-            "Grpc.AspNetCore.Web": {
-              "target": "Package",
-              "version": "[2.27.0-pre1, )"
-            },
             "System.Data.SQLite.Core": {
               "target": "Package",
               "version": "[1.0.112, )"

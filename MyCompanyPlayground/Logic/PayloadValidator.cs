@@ -8,21 +8,21 @@ namespace MyCompanyPlayground.Logic
     {
         public IList<string> MissingMandatoryFields = new List<string>();
         
-        public bool IsValid(CompanyPayload request)
+        public bool IsValid(CompanyPayload company)
         {
-            if (string.IsNullOrWhiteSpace(request.CompanyName))
+            if (string.IsNullOrWhiteSpace(company.CompanyName))
             {
                 MissingMandatoryFields.Add("CompanyName");
             }
-            if (string.IsNullOrWhiteSpace(request.Ticker))
+            if (string.IsNullOrWhiteSpace(company.Ticker))
             {
                 MissingMandatoryFields.Add("Ticker");
             }
-            if (string.IsNullOrWhiteSpace(request.Exchange))
+            if (string.IsNullOrWhiteSpace(company.Exchange))
             {
                 MissingMandatoryFields.Add("Exchange");
             }
-            if (string.IsNullOrWhiteSpace(request.Isin))
+            if (string.IsNullOrWhiteSpace(company.Isin))
             {
                 MissingMandatoryFields.Add("Isin");
             }

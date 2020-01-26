@@ -1,0 +1,160 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj": {}
+  },
+  "projects": {
+    "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj",
+        "projectName": "MyCompanyPlayground",
+        "projectPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj",
+        "packagesPath": "C:\\Users\\Lorca\\.nuget\\packages\\",
+        "outputPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lorca\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.0.30, )"
+            },
+            "Grpc.AspNetCore": {
+              "target": "Package",
+              "version": "[2.24.0, )"
+            },
+            "System.Data.SQLite.Core": {
+              "target": "Package",
+              "version": "[1.0.112, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj",
+        "projectName": "MyCompanyTests",
+        "projectPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj",
+        "packagesPath": "C:\\Users\\Lorca\\.nuget\\packages\\",
+        "outputPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lorca\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj": {
+                "projectPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "MSTest.TestAdapter": {
+              "target": "Package",
+              "version": "[2.0.0, )"
+            },
+            "MSTest.TestFramework": {
+              "target": "Package",
+              "version": "[2.0.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.2.0, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[1.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -9,6 +9,6 @@ namespace MyCompanyPlayground.Repo
         Company GetCompanyById (int id);
         Company GetCompanyByIsin (string Isin);
         IList<Company> GetAllCompanies();
-        void UpdateCompany(Company companyToUpdate);
+        int UpdateCompany(int id, Company companyToUpdate);
     }
 }

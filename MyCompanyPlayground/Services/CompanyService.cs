@@ -15,79 +15,155 @@ namespace MyCompanyPlayground.Services
 	{
 		private readonly ILogger<CompanyService> _logger;
 		private readonly IOptions<ConnectionStrings> _settings;
+		private readonly IDataBase _dataBase;
 		private PayloadValidator _validater = new PayloadValidator();
 
-		public CompanyService(ILogger<CompanyService> logger, IOptions<ConnectionStrings> settings)
+		public CompanyService(ILogger<CompanyService> logger, IOptions<ConnectionStrings> settings, IDataBase dataBase)
 		{
 			_logger = logger;
 			_settings = settings;
+			_dataBase = dataBase;
 		}
 		
-		public override Task<Response> AddCompany(CompanyPayload request, ServerCallContext context)
+		public override Task<AddCompanyResponse> AddCompany (AddCompanyRequest request, ServerCallContext context)
 		{
-			if (!_validater.IsValid(request))
+			if (!_validater.IsValid(request.Company))
 			{
-				return Task.FromResult(new Response
+				return Task.FromResult(new AddCompanyResponse
 				{
-					Status = "400",
-					ErrorMessage = $"Payload is missing Mandatory Fields : {string.Join(", ",_validater.MissingMandatoryFields.Select(l => l))}"
-				});
-			}
-
-			if (DoesAlreadyExit(request.Isin))
-			{
-				return Task.FromResult(new Response
-				{
-					Status = "400",
-					ErrorMessage = $"Record for ISIN : ({request.Isin}) already exists"
+					Message = $"Payload is missing Mandatory Fields : {string.Join(", ",_validater.MissingMandatoryFields.Select(l => l))}"
 				});
 			}
 			
-			Company companyToAdd = new Company(request);
-			
-			SqliteDataAccess database = new SqliteDataAccess(_settings);
-			database.AddCompany(companyToAdd);
-			
-			return Task.FromResult(new Response
+			IsinValidator test = new IsinValidator();
+			if (!test.IsValid(request.Company.Isin))
 			{
-				Status = "200",
-				ErrorMessage = string.Empty
+				return Task.FromResult(new AddCompanyResponse
+				{
+					Message = $"Invalid ISIN : ({request.Company.Isin})"
+				});
+			}
+			
+			if (DoesAlreadyExit(request.Company.Isin))
+			{
+				return Task.FromResult(new AddCompanyResponse
+				{
+					Message = $"Record for ISIN : ({request.Company.Isin}) already exists"
+				});
+			}
+			
+			Company companyToAdd = new Company(request.Company);
+			
+			_dataBase.AddCompany(companyToAdd);
+			
+			return Task.FromResult(new AddCompanyResponse
+			{
+				Message = "Company Successfully Added"
 			});
 		}
-
 		
-		public override Task<CompaniesResponse> GetAllCompanies(Empty request, ServerCallContext context)
+		public override Task<GetAllCompaniesResponse> GetAllCompanies (Empty request, ServerCallContext context)
 		{
-			SqliteDataAccess database = new SqliteDataAccess(_settings);
-			var output = database.GetAllCompanies();
+			var output = _dataBase.GetAllCompanies();
 
-			var response = new CompaniesResponse();
+			var response = new GetAllCompaniesResponse();
 			response.Company.AddRange(GenerateCompanyResponse(output));
 			
 			return Task.FromResult(response);
 		}
 
-		public override Task<CompanyPayload> GetCompanyByIsin(CompanyIsin request, ServerCallContext context)
+		public override Task<GetCompanyByIsinResponse> GetCompanyByIsin (GetCompanyByIsinRequest request, ServerCallContext context)
 		{
-			SqliteDataAccess database = new SqliteDataAccess(_settings);
-			var result = database.GetCompanyByIsin(request.Isin);
-			
-			CompanyPayload response = new CompanyPayload
+			IsinValidator test = new IsinValidator();
+			if (!test.IsValid(request.Isin))
 			{
-				CompanyName = result.Name,
-				Exchange = result.Exchange,
-				Ticker = result.Ticker,
-				Isin = result.Isin,
-				Website = result.Website
+				return Task.FromResult(new GetCompanyByIsinResponse
+				{
+					Company = null,
+					Message = $"Invalid ISIN : {request.Isin}"
+				});
+			}
+			
+			var result = _dataBase.GetCompanyByIsin(request.Isin);
+			
+			GetCompanyByIsinResponse response = new GetCompanyByIsinResponse
+			{
+				Company = new CompanyPayload{
+					CompanyName = result.Name,
+					Exchange = result.Exchange,
+					Ticker = result.Ticker,
+					Isin = result.Isin,
+					Website = result.Website
+				},
+				Message = string.Empty
 			};
 
 			return Task.FromResult(response);
 		}
+
+		public override Task<GetCompanyByIdResponse> GetCompanyById (GetCompanyByIdRequest request, ServerCallContext context)
+		{
+			var result = _dataBase.GetCompanyById(request.Id);
+			
+			CompanyPayload company = null;
+			if(result != null)
+			{
+				company = new CompanyPayload
+				{
+					CompanyName = result?.Name,
+					Exchange = result?.Exchange,
+					Ticker = result?.Ticker,
+					Isin = result?.Isin,
+					Website = result?.Website
+				};
+			}
+			
+			return Task.FromResult(new GetCompanyByIdResponse
+			{
+				Company = company,
+				Message = result == null ? $"No company found for ID : ({request.Id})" : string.Empty
+			});
+		}
+
+		public override Task<UpdateCompanyDetailsResponse> UpdateCompanyDetails(UpdateCompanyDetailsRequest request, ServerCallContext context)
+		{
+			if (!_validater.IsValid(request.Company))
+			{
+				return Task.FromResult(new UpdateCompanyDetailsResponse
+				{
+					Message= $"Payload is missing Mandatory Fields : {string.Join(", ",_validater.MissingMandatoryFields.Select(l => l))}"
+				});
+			}
+			
+			IsinValidator test = new IsinValidator();
+			if (!test.IsValid(request.Company.Isin))
+			{
+				return Task.FromResult(new UpdateCompanyDetailsResponse
+				{
+					Message = $"Invalid ISIN : ({request.Company.Isin})"
+				});
+			}
+			
+			Company company = new Company
+			{
+				Name = request.Company.CompanyName,
+				Exchange = request.Company.Exchange,
+				Ticker = request.Company.Ticker,
+				Isin = request.Company.Isin,
+				Website = request.Company.Website
+			};
+			
+			int rowsAffected = _dataBase.UpdateCompany(request.Id, company);
+			
+			return Task.FromResult(new UpdateCompanyDetailsResponse
+			{
+				Message = rowsAffected == 1 ? $"Company ({request.Id}) was successfully updated" : "Update not successful"
+			});
+		}
 		
 		private bool DoesAlreadyExit(string requestIsin)
 		{
-			SqliteDataAccess database = new SqliteDataAccess(_settings);
-			var result = database.GetCompanyByIsin(requestIsin);
+			var result = _dataBase.GetCompanyByIsin(requestIsin);
 
 			return result != null && !string.IsNullOrWhiteSpace(result.Isin);
 		}

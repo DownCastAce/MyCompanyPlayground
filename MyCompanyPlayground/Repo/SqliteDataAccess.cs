@@ -28,30 +28,31 @@ namespace MyCompanyPlayground.Repo
 
         public Company GetCompanyById(int id)
         {
-            throw new System.NotImplementedException();
+            using (IDbConnection cnn = new SQLiteConnection(ConnectionString))
+            {
+                var output = cnn.Query<Company>("SELECT * FROM CompanyRecords WHERE Id = @Id", new { Id = id });
+                
+                if (!output.Any())
+                {
+                    return null;
+                }
+
+                return output.First();
+            }
         }
 
         public Company GetCompanyByIsin(string Isin)
         {
-            try
+            using (IDbConnection cnn = new SQLiteConnection(ConnectionString))
             {
-                using (IDbConnection cnn = new SQLiteConnection(ConnectionString))
+                var output = cnn.Query<Company>("SELECT * FROM CompanyRecords WHERE Isin = @Isin", new { Isin = Isin });
+                
+                if (!output.Any())
                 {
-                    var output = cnn.Query<Company>("SELECT * FROM CompanyRecords WHERE Isin = @Isin", new { Isin = Isin });
-                    if (!output.Any())
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        return output.First();
-                    }
+                    return null;
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
+
+                return output.First();
             }
         }
 
@@ -64,9 +65,23 @@ namespace MyCompanyPlayground.Repo
             }
         }
 
-        public void UpdateCompany(Company companyToUpdate)
+        public int UpdateCompany(int id, Company companyToUpdate)
         {
-            throw new System.NotImplementedException();
+            int rowAffected = 0;
+            try
+            {
+                using (IDbConnection cnn = new SQLiteConnection(ConnectionString))
+                {
+                    rowAffected = cnn.Execute("UPDATE CompanyRecords SET Name = @Name, Exchange = @Exchange, Ticker = @Ticker, Isin = @Isin, Website = @Website WHERE  Id = @id", new {companyToUpdate.Name, companyToUpdate.Exchange, companyToUpdate.Ticker, companyToUpdate.Isin, companyToUpdate.Website, id } );
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            return rowAffected;
         }
     }
 }

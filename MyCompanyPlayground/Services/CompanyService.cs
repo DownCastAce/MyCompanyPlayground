@@ -67,7 +67,7 @@ namespace MyCompanyPlayground.Services
 		{
 			if (!PayloadValidator.IsValid(request.Isin))
 			{
-				throw new RpcException(new Status(StatusCode.InvalidArgument, "Missing Mandatory Field(s)"));
+				throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid ISIN"), $"Invalid ISIN : ({request.Isin})");
 			}
 			
 			IEnumerable<Company> result = _dataBase.GetCompanyByIsin(request.Isin);
@@ -147,12 +147,7 @@ namespace MyCompanyPlayground.Services
 		{
 			IEnumerable<Company> result = _dataBase.GetCompanyByIsin(requestIsin);
 			
-			if (!result.Any())
-			{
-				throw new RpcException(new Status(StatusCode.NotFound, $"No Company matches search criteria"), $"Company for ISIN ({requestIsin}) doesn't exist.");
-			}
-			
-			return !string.IsNullOrWhiteSpace(result.First().Isin);
+			return result.Any();
 		}
 
 		private IEnumerable<CompanyPayload> GenerateCompanyResponse(IEnumerable<Company> output)

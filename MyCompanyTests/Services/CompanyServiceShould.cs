@@ -55,10 +55,10 @@ namespace MyCompanyTests.Services
         }
         
         [TestMethod]
-        [ExpectedException(typeof(RpcException))]
         public void AddValidCompany_AddCompany()
         {
-            database.Setup(x => x.AddCompany(It.IsAny<Company>()));
+            database.Setup(x => x.AddCompany(It.IsAny<Company>())).Returns(1);
+            database.Setup(x => x.GetCompanyByIsin(ValidIsin)).Returns(ValidCompanys);
             
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
         
@@ -67,7 +67,11 @@ namespace MyCompanyTests.Services
                 Company = validTestCompanyPayload
             };
 
-            tester.AddCompany(testPayload, null);
+            testPayload.Company.Isin = "US1234567890";
+
+            var testResponse = tester.AddCompany(testPayload, null);
+            Assert.IsNotNull(testResponse.Result);
+            Assert.AreEqual("Company Successfully Added", testResponse.Result.Message);
         }
         
         [TestMethod]
@@ -137,7 +141,7 @@ namespace MyCompanyTests.Services
         }
 
         [TestMethod]
-        public void GetCompanyByIsinWithValidIsin_GetCompanyById()
+        public void GetCompanyByIsinWithValidIsin_GetCompanyByIsin()
         {
             database.Setup(x => x.GetCompanyByIsin(validTestCompanyPayload.Isin)).Returns(ValidCompanys);
             
@@ -172,7 +176,7 @@ namespace MyCompanyTests.Services
 
             tester.GetCompanyByIsin(testRequest, null);
         }
-
+        
         [TestMethod]
         public void GetCompanyByIdWithValidId_GetCompanyById()
         {

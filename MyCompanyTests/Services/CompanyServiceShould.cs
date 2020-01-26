@@ -215,6 +215,7 @@ namespace MyCompanyTests.Services
         }
 
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void NotFindAnyCompanyForUnknowId_GetCompanyById()
         {
             database.Setup(x => x.GetCompanyById(1)).Returns(new List<Company>());

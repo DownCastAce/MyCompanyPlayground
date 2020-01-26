@@ -39,10 +39,12 @@ namespace MyCompanyPlayground
 			}
 
 			app.UseRouting();
+			
+			app.UseGrpcWeb(); 
 
 			app.UseEndpoints(endpoints =>
 			{
-				endpoints.MapGrpcService<CompanyService>();
+				endpoints.MapGrpcService<CompanyService>().EnableGrpcWeb();
 			});
 		}
 	}

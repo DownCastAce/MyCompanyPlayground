@@ -6,42 +6,42 @@ package company;
 
 service CompanyServices {
 
-	rpc AddCompany (Company) returns (Response);
-	rpc GetCompanyById (CompanyId) returns (Company);
-	rpc GetCompanyByIsin (CompanyIsin) returns (Company);
-	rpc GetAllCompanies (Empty) returns (Companies);
-	rpc UpdateCompanyDetails (UpdateCompany) returns (Response);
+	rpc AddCompany (CompanyPayload) returns (Response);
+	rpc GetCompanyById (CompanyId) returns (CompanyPayload);
+	rpc GetCompanyByIsin (CompanyIsin) returns (CompanyPayload);
+	rpc GetAllCompanies (Empty) returns (CompaniesResponse);
+	rpc UpdateCompanyDetails (UpdateCompanyRequest) returns (Response);
 }
 
-message Company{
+message CompanyPayload {
 
-	string companyName = 1;
-	string Exchange = 2;
-	string Ticker = 3;
-	string Isin = 4;
+	string company_name = 1;
+	string exchange = 2;
+	string ticker = 3;
+	string isin = 4;
 	string website = 5;
 }
 
-message UpdateCompany {
-	int32 Id = 1;
-	Company CompanyDetails = 2;
+message UpdateCompanyRequest {
+	int32 id = 1;
+	CompanyPayload company_details = 2;
 }
 
-message Companies {
-	repeated Company Companys = 1;
+message CompaniesResponse {
+	repeated CompanyPayload company = 1;
 }
 
 message CompanyId {
-	int32 Id = 1;
+	int32 id = 1;
 }
 
 message CompanyIsin {
-	int32 Isin = 1;
+	string isin = 1;
 }
 
 message Response {
 	string status = 1;
-	string errorMessage = 2;
+	string error_message = 2;
 }
 
 message Empty {

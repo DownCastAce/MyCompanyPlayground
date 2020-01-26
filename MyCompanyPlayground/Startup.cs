@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyCompanyPlayground.Database;
 using MyCompanyPlayground.Services;
 using MyCompanyPlayground.Models;
-using MyCompanyPlayground.Repo;
 
 namespace MyCompanyPlayground
 {

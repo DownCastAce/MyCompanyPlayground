@@ -1,15 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Text.RegularExpressions;
 using MyCompanyPlayground.Protos;
 
 namespace MyCompanyPlayground.Logic
 {
-    public class PayloadValidator
+    public static class PayloadValidator
     {
-        public IList<string> MissingMandatoryFields = new List<string>();
-        
-        public bool IsValid(CompanyPayload company)
+        public static IList<string> VerifyMandatoryFields(CompanyPayload company)
         {
+            IList<string> MissingMandatoryFields = new List<string>();
             if (string.IsNullOrWhiteSpace(company.CompanyName))
             {
                 MissingMandatoryFields.Add("CompanyName");
@@ -27,7 +26,13 @@ namespace MyCompanyPlayground.Logic
                 MissingMandatoryFields.Add("Isin");
             }
             
-            return !MissingMandatoryFields.Any();
+            return MissingMandatoryFields;
+        }
+        
+        public static bool IsValid(string isin)
+        {
+            Regex regex = new Regex("[a-zA-z]{2}[\\w]{10}");
+            return regex.Match(isin).Success;
         }
     }
 }

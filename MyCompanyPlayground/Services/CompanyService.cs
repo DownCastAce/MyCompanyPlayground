@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyCompanyPlayground.Database;
 using MyCompanyPlayground.Logic;
 using MyCompanyPlayground.Models;
 using MyCompanyPlayground.Protos;
-using MyCompanyPlayground.Repo;
 
 namespace MyCompanyPlayground.Services
 {
@@ -16,8 +16,7 @@ namespace MyCompanyPlayground.Services
 		private readonly ILogger<CompanyService> _logger;
 		private readonly IOptions<ConnectionStrings> _settings;
 		private readonly IDataBase _dataBase;
-		private PayloadValidator _validater = new PayloadValidator();
-
+		
 		public CompanyService(ILogger<CompanyService> logger, IOptions<ConnectionStrings> settings, IDataBase dataBase)
 		{
 			_logger = logger;
@@ -27,46 +26,38 @@ namespace MyCompanyPlayground.Services
 		
 		public override Task<AddCompanyResponse> AddCompany (AddCompanyRequest request, ServerCallContext context)
 		{
-			if (!_validater.IsValid(request.Company))
+			IList<string> mandatoryMissingFields = PayloadValidator.VerifyMandatoryFields(request.Company);
+			
+			if (mandatoryMissingFields.Any())
 			{
-				return Task.FromResult(new AddCompanyResponse
-				{
-					Message = $"Payload is missing Mandatory Fields : {string.Join(", ",_validater.MissingMandatoryFields.Select(l => l))}"
-				});
+				throw new RpcException(new Status(StatusCode.InvalidArgument, "Payload is missing Mandatory Fields"), $"Payload is missing Mandatory Fields : {string.Join(", ", mandatoryMissingFields.Select(l => l))}");
 			}
 			
-			IsinValidator test = new IsinValidator();
-			if (!test.IsValid(request.Company.Isin))
+			if (!PayloadValidator.IsValid(request.Company.Isin))
 			{
-				return Task.FromResult(new AddCompanyResponse
-				{
-					Message = $"Invalid ISIN : ({request.Company.Isin})"
-				});
+				throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid ISIN"), $"Invalid ISIN : ({request.Company.Isin})");
 			}
 			
 			if (DoesAlreadyExit(request.Company.Isin))
 			{
-				return Task.FromResult(new AddCompanyResponse
-				{
-					Message = $"Record for ISIN : ({request.Company.Isin}) already exists"
-				});
+				throw new RpcException(new Status(StatusCode.AlreadyExists, "Company already exists with this ISIN"), $"Record for ISIN : ({request.Company.Isin}) already exists");
 			}
 			
 			Company companyToAdd = new Company(request.Company);
 			
-			_dataBase.AddCompany(companyToAdd);
+			int rowsAffected = _dataBase.AddCompany(companyToAdd);
 			
 			return Task.FromResult(new AddCompanyResponse
 			{
-				Message = "Company Successfully Added"
+				Message = rowsAffected == 1 ? "Company Successfully Added" : "Failed to add Company"
 			});
 		}
 		
-		public override Task<GetAllCompaniesResponse> GetAllCompanies (Empty request, ServerCallContext context)
+		public override Task<GetAllCompaniesResponse> GetAllCompanies (GetAllCompaniesRequest request, ServerCallContext context)
 		{
-			var output = _dataBase.GetAllCompanies();
+			IEnumerable<Company> output = _dataBase.GetAllCompanies();
 
-			var response = new GetAllCompaniesResponse();
+			GetAllCompaniesResponse response = new GetAllCompaniesResponse();
 			response.Company.AddRange(GenerateCompanyResponse(output));
 			
 			return Task.FromResult(response);
@@ -74,28 +65,27 @@ namespace MyCompanyPlayground.Services
 
 		public override Task<GetCompanyByIsinResponse> GetCompanyByIsin (GetCompanyByIsinRequest request, ServerCallContext context)
 		{
-			IsinValidator test = new IsinValidator();
-			if (!test.IsValid(request.Isin))
+			if (!PayloadValidator.IsValid(request.Isin))
 			{
-				return Task.FromResult(new GetCompanyByIsinResponse
-				{
-					Company = null,
-					Message = $"Invalid ISIN : {request.Isin}"
-				});
+				throw new RpcException(new Status(StatusCode.InvalidArgument, "Missing Mandatory Field(s)"));
 			}
 			
-			var result = _dataBase.GetCompanyByIsin(request.Isin);
+			IEnumerable<Company> result = _dataBase.GetCompanyByIsin(request.Isin);
+
+			if (!result.Any())
+			{
+				throw new RpcException(new Status(StatusCode.NotFound, $"No Company matches search criteria"), $"Company for ISIN ({request.Isin}) doesn't exist.");
+			}
 			
 			GetCompanyByIsinResponse response = new GetCompanyByIsinResponse
 			{
 				Company = new CompanyPayload{
-					CompanyName = result.Name,
-					Exchange = result.Exchange,
-					Ticker = result.Ticker,
-					Isin = result.Isin,
-					Website = result.Website
-				},
-				Message = string.Empty
+					CompanyName = result.First().Name,
+					Exchange = result.First().Exchange,
+					Ticker = result.First().Ticker,
+					Isin = result.First().Isin,
+					Website = result.First().Website
+				}
 			};
 
 			return Task.FromResult(response);
@@ -103,55 +93,47 @@ namespace MyCompanyPlayground.Services
 
 		public override Task<GetCompanyByIdResponse> GetCompanyById (GetCompanyByIdRequest request, ServerCallContext context)
 		{
-			var result = _dataBase.GetCompanyById(request.Id);
+			IEnumerable<Company> result = _dataBase.GetCompanyById(request.Id);
+			
+			if (!result.Any())
+			{
+				throw new RpcException(new Status(StatusCode.NotFound, $"No Company matches search criteria"), $"Company for Id ({request.Id}) doesn't exist.");
+			}
 			
 			CompanyPayload company = null;
 			if(result != null)
 			{
 				company = new CompanyPayload
 				{
-					CompanyName = result.Name,
-					Exchange = result.Exchange,
-					Ticker = result.Ticker,
-					Isin = result.Isin,
-					Website = result.Website
+					CompanyName = result.First().Name,
+					Exchange = result.First().Exchange,
+					Ticker = result.First().Ticker,
+					Isin = result.First().Isin,
+					Website = result.First().Website
 				};
 			}
 			
 			return Task.FromResult(new GetCompanyByIdResponse
 			{
-				Company = company,
-				Message = result == null ? $"No company found for ID : ({request.Id})" : string.Empty
+				Company = company
 			});
 		}
 
 		public override Task<UpdateCompanyDetailsResponse> UpdateCompanyDetails(UpdateCompanyDetailsRequest request, ServerCallContext context)
 		{
-			if (!_validater.IsValid(request.Company))
+			IList<string> mandatoryMissingFields = PayloadValidator.VerifyMandatoryFields(request.Company);
+			
+			if (mandatoryMissingFields.Any())
 			{
-				return Task.FromResult(new UpdateCompanyDetailsResponse
-				{
-					Message= $"Payload is missing Mandatory Fields : {string.Join(", ",_validater.MissingMandatoryFields.Select(l => l))}"
-				});
+				throw new RpcException(new Status(StatusCode.InvalidArgument, "Payload is missing Mandatory Fields"), $"Payload is missing Mandatory Fields : {string.Join(", ", mandatoryMissingFields.Select(l => l))}");
 			}
 			
-			IsinValidator test = new IsinValidator();
-			if (!test.IsValid(request.Company.Isin))
+			if (!PayloadValidator.IsValid(request.Company.Isin))
 			{
-				return Task.FromResult(new UpdateCompanyDetailsResponse
-				{
-					Message = $"Invalid ISIN : ({request.Company.Isin})"
-				});
+				throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid ISIN"), $"Invalid ISIN : ({request.Company.Isin})");
 			}
 			
-			Company company = new Company
-			{
-				Name = request.Company.CompanyName,
-				Exchange = request.Company.Exchange,
-				Ticker = request.Company.Ticker,
-				Isin = request.Company.Isin,
-				Website = request.Company.Website
-			};
+			Company company = new Company(request.Company);
 			
 			int rowsAffected = _dataBase.UpdateCompany(request.Id, company);
 			
@@ -163,14 +145,19 @@ namespace MyCompanyPlayground.Services
 		
 		private bool DoesAlreadyExit(string requestIsin)
 		{
-			var result = _dataBase.GetCompanyByIsin(requestIsin);
-
-			return result != null && !string.IsNullOrWhiteSpace(result.Isin);
+			IEnumerable<Company> result = _dataBase.GetCompanyByIsin(requestIsin);
+			
+			if (!result.Any())
+			{
+				throw new RpcException(new Status(StatusCode.NotFound, $"No Company matches search criteria"), $"Company for ISIN ({requestIsin}) doesn't exist.");
+			}
+			
+			return !string.IsNullOrWhiteSpace(result.First().Isin);
 		}
 
-		private IEnumerable<CompanyPayload> GenerateCompanyResponse(IList<Company> output)
+		private IEnumerable<CompanyPayload> GenerateCompanyResponse(IEnumerable<Company> output)
 		{
-			foreach (var company in output)
+			foreach (Company company in output)
 			{
 				yield return new CompanyPayload
 				{

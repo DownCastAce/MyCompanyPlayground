@@ -1,16 +1,18 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using MyCompanyPlayground.Database;
 using MyCompanyPlayground.Models;
 using MyCompanyPlayground.Protos;
-using MyCompanyPlayground.Repo;
 using MyCompanyPlayground.Services;
 
 namespace MyCompanyTests.Services
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class CompanyServiceShould
     {
@@ -18,6 +20,8 @@ namespace MyCompanyTests.Services
         private const string InvalidIsin = "IE12345";
         private CompanyPayload validTestCompanyPayload;
         private Company validTestCompany;
+        private IList<Company> ValidCompanys = new List<Company>();
+        
         private Mock<ILogger<CompanyService>> logger;
         private Mock<IOptions<ConnectionStrings>> settings;
         private Mock<IDataBase> database;
@@ -44,12 +48,14 @@ namespace MyCompanyTests.Services
                 Website = validTestCompanyPayload.Website
             };
             
+            ValidCompanys.Add(validTestCompany);
             database = new Mock<IDataBase>();
             settings = new Mock<IOptions<ConnectionStrings>>();
             logger = new Mock<ILogger<CompanyService>>();
         }
         
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void AddValidCompany_AddCompany()
         {
             database.Setup(x => x.AddCompany(It.IsAny<Company>()));
@@ -61,13 +67,11 @@ namespace MyCompanyTests.Services
                 Company = validTestCompanyPayload
             };
 
-            var testResponse = tester.AddCompany(testPayload, null);
-            
-            Assert.IsNotNull(testResponse.Result);
-            Assert.AreEqual("Company Successfully Added", testResponse.Result.Message);
+            tester.AddCompany(testPayload, null);
         }
         
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void SendErrorMessageForMissingCompanyName_AddCompany()
         {
             database.Setup(x => x.AddCompany(It.IsAny<Company>()));
@@ -81,13 +85,11 @@ namespace MyCompanyTests.Services
 
             testPayload.Company.CompanyName = string.Empty;
             
-            var testResponse = tester.AddCompany(testPayload, null);
-            
-            Assert.IsNotNull(testResponse.Result);
-            Assert.AreEqual("Payload is missing Mandatory Fields : CompanyName", testResponse.Result.Message);
+            tester.AddCompany(testPayload, null);
         }
         
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void SendErrorMessageForInvalidIsin_AddCompany()
         {
             database.Setup(x => x.AddCompany(It.IsAny<Company>()));
@@ -101,17 +103,15 @@ namespace MyCompanyTests.Services
 
             testPayload.Company.Isin = InvalidIsin;
 
-            var testResponse = tester.AddCompany(testPayload, null);
-            
-            Assert.IsNotNull(testResponse.Result);
-            Assert.AreEqual($"Invalid ISIN : ({InvalidIsin})", testResponse.Result.Message);
+            tester.AddCompany(testPayload, null);
         }
         
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void SendErrorMessageForDuplicateIsin_AddCompany()
         {
             database.Setup(x => x.AddCompany(It.IsAny<Company>()));
-            database.Setup(x => x.GetCompanyByIsin(ValidIsin)).Returns(validTestCompany);
+            database.Setup(x => x.GetCompanyByIsin(ValidIsin)).Returns(ValidCompanys);
             
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
         
@@ -120,10 +120,7 @@ namespace MyCompanyTests.Services
                 Company = validTestCompanyPayload
             };
 
-            var testResponse = tester.AddCompany(testPayload, null);
-            
-            Assert.IsNotNull(testResponse.Result);
-            Assert.AreEqual($"Record for ISIN : ({validTestCompanyPayload.Isin}) already exists", testResponse.Result.Message);
+            tester.AddCompany(testPayload, null);
         }
 
         [TestMethod]
@@ -132,7 +129,7 @@ namespace MyCompanyTests.Services
             database.Setup(x => x.GetAllCompanies()).Returns(new List<Company>{ validTestCompany });
             
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
-            var testResponse = tester.GetAllCompanies(new Empty(), null);
+            var testResponse = tester.GetAllCompanies(new GetAllCompaniesRequest(), null);
             
             Assert.IsNotNull(testResponse.Result.Company);
             Assert.AreEqual(1, testResponse.Result.Company.Count);
@@ -142,7 +139,7 @@ namespace MyCompanyTests.Services
         [TestMethod]
         public void GetCompanyByIsinWithValidIsin_GetCompanyById()
         {
-            database.Setup(x => x.GetCompanyByIsin(validTestCompanyPayload.Isin)).Returns(validTestCompany);
+            database.Setup(x => x.GetCompanyByIsin(validTestCompanyPayload.Isin)).Returns(ValidCompanys);
             
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
 
@@ -163,6 +160,7 @@ namespace MyCompanyTests.Services
         }
         
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void GetErrorMessageWithInvalidIsin_GetCompanyByIsin()
         {
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
@@ -172,16 +170,13 @@ namespace MyCompanyTests.Services
                 Isin = InvalidIsin
             };
 
-            var testResponse = tester.GetCompanyByIsin(testRequest, null);
-            
-            Assert.IsNull(testResponse.Result.Company);
-            Assert.AreEqual($"Invalid ISIN : {InvalidIsin}", testResponse.Result.Message);
+            tester.GetCompanyByIsin(testRequest, null);
         }
 
         [TestMethod]
         public void GetCompanyByIdWithValidId_GetCompanyById()
         {
-            database.Setup(x => x.GetCompanyById(1)).Returns(validTestCompany);
+            database.Setup(x => x.GetCompanyById(1)).Returns(ValidCompanys);
             
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
 
@@ -221,6 +216,7 @@ namespace MyCompanyTests.Services
         }
 
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void ReturnErrorMessageForInvalidPayload_UpdateCompanyDetails()
         {
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
@@ -231,13 +227,11 @@ namespace MyCompanyTests.Services
                 Id = 1
             };
 
-            var testResponse = tester.UpdateCompanyDetails(testRequest, null);
-            
-            Assert.IsNotNull(testResponse.Result.Message);
-            Assert.AreEqual($"Payload is missing Mandatory Fields : CompanyName, Ticker, Exchange, Isin", testResponse.Result.Message);
+            tester.UpdateCompanyDetails(testRequest, null);
         }
         
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
         public void ReturnErrorMessageForInvalidIsin_UpdateCompanyDetails()
         {
             CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
@@ -250,10 +244,7 @@ namespace MyCompanyTests.Services
 
             testRequest.Company.Isin = InvalidIsin;
             
-            var testResponse = tester.UpdateCompanyDetails(testRequest, null);
-            
-            Assert.IsNotNull(testResponse.Result.Message);
-            Assert.AreEqual($"Invalid ISIN : ({InvalidIsin})", testResponse.Result.Message);
+            tester.UpdateCompanyDetails(testRequest, null);
         }
     }
 }

@@ -178,6 +178,20 @@ namespace MyCompanyTests.Services
         }
         
         [TestMethod]
+        [ExpectedException(typeof(RpcException))]
+        public void NotGetAnyRecordsForUnKnownIsin_GetCompanyByIsin()
+        {
+            CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
+
+            var testRequest = new GetCompanyByIsinRequest
+            {
+                Isin = "PO1234567890"
+            };
+
+            tester.GetCompanyByIsin(testRequest, null);
+        }
+        
+        [TestMethod]
         public void GetCompanyByIdWithValidId_GetCompanyById()
         {
             database.Setup(x => x.GetCompanyById(1)).Returns(ValidCompanys);
@@ -198,6 +212,21 @@ namespace MyCompanyTests.Services
             Assert.AreEqual(validTestCompany.Isin, testResponse.Result.Company.Isin);
             Assert.AreEqual(validTestCompany.Website, testResponse.Result.Company.Website);
             Assert.AreEqual(string.Empty, testResponse.Result.Message);
+        }
+
+        [TestMethod]
+        public void NotFindAnyCompanyForUnknowId_GetCompanyById()
+        {
+            database.Setup(x => x.GetCompanyById(1)).Returns(new List<Company>());
+
+            CompanyService tester = new CompanyService(logger.Object, settings.Object, database.Object);
+
+            var testRequest = new GetCompanyByIdRequest
+            {
+                Id = 1
+            };
+
+            tester.GetCompanyById(testRequest, null);
         }
 
         [TestMethod]

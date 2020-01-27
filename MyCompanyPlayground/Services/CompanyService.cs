@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -132,10 +134,17 @@ namespace MyCompanyPlayground.Services
 			{
 				throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid ISIN"), $"Invalid ISIN : ({request.Company.Isin})");
 			}
-			
+
 			Company company = new Company(request.Company);
-			
-			int rowsAffected = _dataBase.UpdateCompany(request.Id, company);
+			int rowsAffected = 0;
+			try
+			{
+				rowsAffected = _dataBase.UpdateCompany(request.Id, company);
+			}
+			catch (SQLiteException)
+			{
+				throw new RpcException(new Status(StatusCode.AlreadyExists, $"The ISIN ({request.Company.Isin}) already exists"));
+			}
 			
 			return Task.FromResult(new UpdateCompanyDetailsResponse
 			{

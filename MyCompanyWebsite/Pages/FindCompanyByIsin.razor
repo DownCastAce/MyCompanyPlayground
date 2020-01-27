@@ -1,0 +1,76 @@
+﻿@page "/findcompanybyisin"
+
+@using MyCompanyWebsite.Proxies
+@using MyCompanyWebsite.Data
+@using Grpc.Core
+
+@inject MyCompanyClient client
+
+
+<h1>Find Company By ISIN</h1>
+
+<EditForm Model="@companyIsin" OnValidSubmit="HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<p>
+		<label>
+			Company ISIN :
+			<InputText id="companyIsin" @bind-Value="companyIsin.Value" />
+		</label>
+	</p>
+	<p>
+		<button type="submit">Submit</button>
+	</p>
+
+	@if (response != null)
+	{
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Exchange</th>
+					<th>Ticker</th>
+					<th>ISIN</th>
+					<th>Website</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>@response.Name</td>
+					<td>@response.Exchange</td>
+					<td>@response.Ticker</td>
+					<td>@response.Isin</td>
+					<td>@response.Website</td>
+				</tr>
+			</tbody>
+		</table>
+	}
+	else if (errorMessage != null)
+	{
+		<p>
+			@errorMessage
+		</p>
+	}
+
+</EditForm>
+
+@code {
+	private CompanyIsin companyIsin = new CompanyIsin();
+	private string errorMessage = null;
+	private Company response = null;
+	private void HandleValidSubmit()
+	{
+		try
+		{
+			errorMessage = null;
+			response = client.FindCompanyByIsin(companyIsin.Value);
+		}
+		catch (RpcException exception)
+		{
+			response = null;
+			errorMessage = exception.Status.Detail;
+		}
+	}
+}

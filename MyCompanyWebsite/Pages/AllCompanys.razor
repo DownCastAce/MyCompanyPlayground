@@ -1,0 +1,51 @@
+﻿@page "/allcompanys"
+
+@using MyCompanyWebsite.Proxies
+@using MyCompanyWebsite.Data
+@inject MyCompanyClient client
+
+<h1>Our Clients</h1>
+
+@code {
+
+}
+
+@if (companies == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Exchange</th>
+				<th>Ticker</th>
+				<th>ISIN</th>
+				<th>Website</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (Company company in companies)
+			{
+				<tr>
+					<td>@company.Name</td>
+					<td>@company.Exchange</td>
+					<td>@company.Ticker</td>
+					<td>@company.Isin</td>
+					<td>@company.Website</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private IEnumerable<Company> companies;
+
+	protected override void OnInitialized()
+	{
+		companies = client.GetAllCompanies();
+	}
+}

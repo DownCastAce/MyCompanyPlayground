@@ -1,0 +1,65 @@
+﻿@page "/addcompany"
+
+@using MyCompanyWebsite.Proxies
+@using MyCompanyWebsite.Data
+@inject MyCompanyClient client
+
+<h1>Add New Client</h1>
+
+<EditForm Model="@_company" OnValidSubmit="HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<p>
+		<label>
+			Company Name : 
+			<InputText id="companyname" @bind-Value="_company.Name" />
+		</label>
+	</p>
+	<p>
+		<label>
+			Exchange : 
+			<InputText id="exchange" @bind-Value="_company.Exchange" />
+		</label>
+	</p>
+	<p>
+		<label>
+			Ticker : 
+			<InputText id="ticker" @bind-Value="_company.Ticker" />
+		</label>
+	</p>
+	<p>
+		<label>
+			ISIN : 
+			<InputText id="isin" @bind-Value="_company.Isin" />
+		</label>
+	</p>
+	<p>
+		<label>
+			Website : 
+			<InputText id="website" @bind-Value="_company.Website" />
+		</label>
+	</p>
+	<p>
+		<button type="submit">Submit</button>
+	</p>
+	@if (response != null)
+	{
+		<p>
+			@response
+		</p>
+	}
+	
+	
+
+	
+</EditForm>
+
+@code {
+	private Company _company = new Company();
+	private string response = null;
+	private void HandleValidSubmit()
+	{
+		response = client.AddCompany(_company);
+	}
+}

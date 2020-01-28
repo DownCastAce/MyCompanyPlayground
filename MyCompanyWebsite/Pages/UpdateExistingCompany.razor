@@ -8,6 +8,8 @@
 
 <h1>Update Existing Company</h1>
 
+<h3> Find Company </h3>
+
 <EditForm Model="@companyId" OnValidSubmit="HandleSearchValidSubmit">
 	<DataAnnotationsValidator />
 	<ValidationSummary />
@@ -21,7 +23,12 @@
 	<p>
 		<button type="submit">Submit</button>
 	</p>
-
+	@if (errorMessage != null)
+	{
+	<p>
+		@errorMessage
+	</p>
+	}
 </EditForm>
 
 
@@ -47,9 +54,18 @@
 		{
 			response = null;
 			errorMessage = exception.Status.Detail;
+			updateCompany = new UpdateCompany();
+		}
+		catch(FormatException exception)
+		{
+			response = null;
+			errorMessage = "Invalid input, Id must be a numeric value";
+			updateCompany = new UpdateCompany();
 		}
 	}
 }
+
+<h3> Update Company Details </h3>
 
 <EditForm Model="@updateCompany" OnValidSubmit="HandleValidSubmit">
 	<DataAnnotationsValidator />

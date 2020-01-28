@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj": {}
+    "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj": {}
   },
   "projects": {
-    "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj": {
+    "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj",
+        "projectUniqueName": "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj",
         "projectName": "MyCompanyPlayground",
-        "projectPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj",
+        "projectPath": "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj",
         "packagesPath": "C:\\Users\\Lorca\\.nuget\\packages\\",
-        "outputPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\obj\\",
+        "outputPath": "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyPlayground\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -76,14 +76,14 @@
         }
       }
     },
-    "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj": {
+    "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj",
+        "projectUniqueName": "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj",
         "projectName": "MyCompanyTests",
-        "projectPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj",
+        "projectPath": "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyTests\\MyCompanyTests.csproj",
         "packagesPath": "C:\\Users\\Lorca\\.nuget\\packages\\",
-        "outputPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyTests\\obj\\",
+        "outputPath": "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyTests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -102,8 +102,8 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj": {
-                "projectPath": "E:\\Workspaces\\Github_Workspace\\CompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj"
+              "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj": {
+                "projectPath": "E:\\Workspaces\\Github_Workspace\\Test\\MyCompanyPlayground\\MyCompanyPlayground\\MyCompanyPlayground.csproj"
               }
             }
           }

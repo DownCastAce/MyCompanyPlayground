@@ -97,5 +97,30 @@ namespace MyCompanyWebsite.Proxies
 				return exception.Status.Detail;
 			}
 		}
+
+		public string UpdateCompany(UpdateCompany updateCompany)
+		{
+			UpdateCompanyDetailsRequest request = new UpdateCompanyDetailsRequest
+			{
+				Id = int.Parse(updateCompany.Id),
+				Company = new CompanyPayload
+				{
+					CompanyName = updateCompany.Name,
+					Exchange = updateCompany.Exchange,
+					Ticker = updateCompany.Ticker,
+					Isin = updateCompany.Isin,
+					Website = updateCompany.Website,
+				}
+			};
+			try
+			{
+				var response = _client.UpdateCompanyDetails(request);
+				return response.Message;
+			}
+			catch (RpcException exception)
+			{
+				return exception.Status.Detail;
+			}
+		}
 	}
 }

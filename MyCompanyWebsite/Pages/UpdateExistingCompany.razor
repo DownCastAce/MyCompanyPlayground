@@ -1,5 +1,117 @@
-﻿<h3>UpdateExistingCompany</h3>
+﻿@page "/updateexistingcompany"
+
+@using MyCompanyWebsite.Proxies
+@using MyCompanyWebsite.Data
+@using Grpc.Core
+
+@inject MyCompanyClient client
+
+<h1>Update Existing Company</h1>
+
+<EditForm Model="@companyId" OnValidSubmit="HandleSearchValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<p>
+		<label>
+			Company Id :
+			<InputText id="companyId" @bind-Value="companyId.Value" />
+		</label>
+	</p>
+	<p>
+		<button type="submit">Submit</button>
+	</p>
+
+</EditForm>
+
 
 @code {
+	private CompanyId companyId = new CompanyId();
+	private string errorMessage = null;
+	private Company response = null;
+	private void HandleSearchValidSubmit()
+	{
+		try
+		{
+			errorMessage = null;
+			response = client.FindCompanyById(int.Parse(companyId.Value));
 
+			updateCompany.Id = companyId.Value;
+			updateCompany.Name = response.Name;
+			updateCompany.Exchange = response.Exchange;
+			updateCompany.Ticker = response.Ticker;
+			updateCompany.Isin = response.Isin;
+			updateCompany.Website = response.Website;
+		}
+		catch (RpcException exception)
+		{
+			response = null;
+			errorMessage = exception.Status.Detail;
+		}
+	}
+}
+
+<EditForm Model="@updateCompany" OnValidSubmit="HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<p>
+		<label>
+			Company ID :
+			<InputText id="companyId" @bind-Value="updateCompany.Id" />
+		</label>
+	</p>
+	<p>
+		<label>
+			Company Name :
+			<InputText id="companyname" @bind-Value="updateCompany.Name" />
+		</label>
+	</p>
+	<p>
+		<label>
+			Exchange :
+			<InputText id="exchange" @bind-Value="updateCompany.Exchange" />
+		</label>
+	</p>
+	<p>
+		<label>
+			Stock Ticker :
+			<InputText id="ticker" @bind-Value="updateCompany.Ticker" />
+		</label>
+	</p>
+	<p>
+		<label>
+			ISIN :
+			<InputText id="isin" @bind-Value="updateCompany.Isin" />
+		</label>
+	</p>
+	<p>
+		<label>
+			Website :
+			<InputText id="website" @bind-Value="updateCompany.Website" />
+		</label>
+	</p>
+	<p>
+		<button type="submit">Submit</button>
+	</p>
+	@if (updateResponse != null)
+	{
+		<p>
+			@updateResponse
+		</p>
+	}
+
+
+
+
+</EditForm>
+
+@code {
+	private UpdateCompany updateCompany = new UpdateCompany();
+	private string updateResponse = null;
+	
+	private void HandleValidSubmit()
+	{
+		updateResponse = client.UpdateCompany(updateCompany);
+	}
 }

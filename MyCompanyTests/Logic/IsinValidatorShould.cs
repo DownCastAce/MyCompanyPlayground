@@ -11,7 +11,7 @@ namespace MyCompanyTests.Logic
         [TestMethod]
         public void ReturnTrueForValidIsin()
         {
-            string testWithCountryCodeAndAllNumbers = "IE1234567890";
+            string testWithCountryCodeAndAllNumbers = "IE123456789a";
             
             string testWithCountryCodeAndAlphaNumberCombination = "IE12345abcde";
 
@@ -33,7 +33,7 @@ namespace MyCompanyTests.Logic
             string testWithIsinMissingLastValue = "US037833100";
 
             string testWithSpecialCharacter = "IE123456789#";
-            
+
             Assert.IsFalse(PayloadValidator.IsValid(testOnlyNumbers));
             Assert.IsFalse(PayloadValidator.IsValid(testWithOnlyCharaters));
             Assert.IsFalse(PayloadValidator.IsValid(testWithIsinMissingLastValue));

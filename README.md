@@ -1,3 +1,3 @@
 # MyCompanyPlaygroundv
 
-Project uses gRPC, SQLite DB and dapper
+Project uses gRPC, SQLite DB, Blazor, razor and dapper

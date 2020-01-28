@@ -66,7 +66,7 @@ namespace MyCompanyWebsite.Proxies
 			return new Company
 			{
 				Name = response.Company.CompanyName,
-				Exchange = response.Company.CompanyName,
+				Exchange = response.Company.Exchange,
 				Isin = response.Company.Isin,
 				Ticker = response.Company.Ticker,
 				Website = response.Company.Website

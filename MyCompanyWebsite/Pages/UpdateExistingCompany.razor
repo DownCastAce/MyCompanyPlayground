@@ -56,7 +56,7 @@
 			errorMessage = exception.Status.Detail;
 			updateCompany = new UpdateCompany();
 		}
-		catch(FormatException exception)
+		catch(FormatException)
 		{
 			response = null;
 			errorMessage = "Invalid input, Id must be a numeric value";

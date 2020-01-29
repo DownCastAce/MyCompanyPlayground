@@ -71,7 +71,7 @@
 			response = null;
 			errorMessage = exception.Status.Detail;
 		}
-		catch(FormatException exception)
+		catch(FormatException)
 		{
 			response = null;
 			errorMessage = "Invalid input, Id must be a numeric value";
